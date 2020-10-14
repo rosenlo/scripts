@@ -1,0 +1,15 @@
+#!/usr/bin/expect
+
+set user "luozihao"
+set timeout 10
+set totp [exec oathtool --base32 --totp $env(TOTP)]
+set server 103
+spawn ssh -p 2222 $env(BASTION) -l $user
+expect {
+    "*MFA auth*" {send -- "$totp\r";}
+}
+expect {
+    "Opt>" {send "$server\r";}
+}
+interact
+
